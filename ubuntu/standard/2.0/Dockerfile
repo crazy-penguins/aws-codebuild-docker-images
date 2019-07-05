@@ -222,3 +222,5 @@ RUN set -ex \
     && chmod 755 /opt/chromedriver-$CHROME_DRIVER_VERSION \
     && ln -s /opt/chromedriver-$CHROME_DRIVER_VERSION /usr/bin/chromedriver \
     && chromedriver --version
+
+ENTRYPOINT [ "/usr/local/bin/dockerd-entrypoint.sh" ]
