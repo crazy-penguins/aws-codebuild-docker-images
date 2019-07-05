@@ -32,39 +32,39 @@ RUN set -ex \
     && apt-get update \
     && apt install -y apt-transport-https \
     && apt-get update \
-    && apt-get install software-properties-common -y --no-install-recommends \
+    && alias ain='apt-get install -y --no-install-recommends' \
+    && ain software-properties-common \
     && apt-add-repository ppa:git-core/ppa \
     && apt-get update \
-    && apt-get install git=1:2.* -y --no-install-recommends \
+    && ain git=1:2.* \
     && git version \
-    && apt-get install -y --no-install-recommends openssh-client \
+    && ain openssh-client \
     && mkdir ~/.ssh \
     && touch ~/.ssh/known_hosts \
     && ssh-keyscan -t rsa,dsa -H github.com >> ~/.ssh/known_hosts \
     && ssh-keyscan -t rsa,dsa -H bitbucket.org >> ~/.ssh/known_hosts \
     && chmod 600 ~/.ssh/known_hosts \
-    && apt-get install -y --no-install-recommends \
-    && apt-get install -y wget python3 python3-dev python3-pip python3-setuptools fakeroot ca-certificates jq \
-    && apt-get install -y netbase gnupg dirmngr mercurial procps \
-    && apt-get install -y tar bzr gzip zip autoconf automake \
-    && apt-get install -y bzip2 file g++ gcc imagemagick \
-    && apt-get install -y libbz2-dev libc6-dev libcurl4-openssl-dev libdb-dev \
-    && apt-get install -y libevent-dev libffi-dev libgeoip-dev libglib2.0-dev \
-    && apt-get install -y libjpeg-dev libkrb5-dev liblzma-dev \
-    && apt-get install -y libmagickcore-dev libmagickwand-dev libmysqlclient-dev \
-    && apt-get install -y libncurses5-dev libpq-dev libreadline-dev \
-    && apt-get install -y libsqlite3-dev libssl-dev libtool libwebp-dev \
-    && apt-get install -y libxml2-dev libxslt1-dev libyaml-dev make \
-    && apt-get install -y patch xz-utils zlib1g-dev unzip curl \
-    && apt-get install -y e2fsprogs iptables xfsprogs \
-    && apt-get install -y less groff liberror-perl \
-    && apt-get install -y asciidoc build-essential docbook-xml docbook-xsl dpkg-dev \
-    && apt-get install -y libdbd-sqlite3-perl libdbi-perl libdpkg-perl libhttp-date-perl \
-    && apt-get install -y libio-pty-perl libserf-1-1 libsvn-perl libsvn1 libtcl8.6 libtimedate-perl \
-    && apt-get install -y libxml2-utils libyaml-perl python-bzrlib python-configobj \
-    && apt-get install -y sgml-base sgml-data tcl tcl8.6 xml-core xmlto xsltproc \
-    && apt-get install -y tk gettext gettext-base libapr1 libaprutil1 xvfb expect parallel \
-    && apt-get install -y locales rsync \
+    && ain wget python3 python3-dev python3-pip python3-setuptools fakeroot ca-certificates jq \
+    && ain netbase gnupg dirmngr mercurial procps \
+    && ain tar bzr gzip zip autoconf automake \
+    && ain bzip2 file g++ gcc imagemagick \
+    && ain libbz2-dev libc6-dev libcurl4-openssl-dev libdb-dev \
+    && ain  libevent-dev libffi-dev libgeoip-dev libglib2.0-dev \
+    && ain libjpeg-dev libkrb5-dev liblzma-dev \
+    && ain libmagickcore-dev libmagickwand-dev libmysqlclient-dev \
+    && ain libncurses5-dev libpq-dev libreadline-dev \
+    && ain libsqlite3-dev libssl-dev libtool libwebp-dev \
+    && ain libxml2-dev libxslt1-dev libyaml-dev make \
+    && ain patch xz-utils zlib1g-dev unzip curl \
+    && ain e2fsprogs iptables xfsprogs \
+    && ain less groff liberror-perl \
+    && ain asciidoc build-essential docbook-xml docbook-xsl dpkg-dev \
+    && ain libdbd-sqlite3-perl libdbi-perl libdpkg-perl libhttp-date-perl \
+    && ain libio-pty-perl libserf-1-1 libsvn-perl libsvn1 libtcl8.6 libtimedate-perl \
+    && ain libxml2-utils libyaml-perl python-bzrlib python-configobj \
+    && ain sgml-base sgml-data tcl tcl8.6 xml-core xmlto xsltproc \
+    && ain tk gettext gettext-base libapr1 libaprutil1 xvfb expect parallel \
+    && ain locales rsync \
     && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF \
     && echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | tee /etc/apt/sources.list.d/mono-official-stable.list \
     && rm -rf /var/lib/apt/lists/* \
@@ -122,8 +122,7 @@ ENV PATH="/usr/local/bin:$PATH" \
     LC_ALL=C.UTF-8 \
     LANG=C.UTF-8
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        tcl-dev tk-dev \
+RUN apt-get update && ain tcl-dev tk-dev \
     && rm -rf /var/lib/apt/lists/* \
     && wget -O python.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz" && \
     wget -O python.tar.xz.asc "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc" \
@@ -187,7 +186,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
      && n $NODE_VERSION && npm install --save-dev -g grunt && npm install --save-dev -g grunt-cli && npm install --save-dev -g webpack \
      && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
      && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
-     && apt-get update && apt-get install -y --no-install-recommends yarn \
+     && apt-get update && ain yarn \
      && cd / && rm -rf $N_SRC_DIR; 
 
 #****************      END NODEJS     ****************************************************
@@ -196,7 +195,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN set -ex \
     && apt-add-repository "deb http://archive.canonical.com/ubuntu $(lsb_release -sc) partner" \
     && apt-add-repository ppa:malteworld/ppa && apt-get update \
-    && apt-get install -y libgtk-3-0 libglib2.0-0 libdbus-glib-1-2 libdbus-1-3 libasound2 \
+    && ain libgtk-3-0 libglib2.0-0 libdbus-glib-1-2 libdbus-1-3 libasound2 \
     && wget -O ~/FirefoxSetup.tar.bz2 "https://download.mozilla.org/?product=firefox-latest&os=linux64" \
     && tar xjf ~/FirefoxSetup.tar.bz2 -C /opt/ \
     && ln -s /opt/firefox/firefox /usr/local/bin/firefox \
