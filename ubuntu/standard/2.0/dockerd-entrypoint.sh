@@ -2,10 +2,10 @@
 set -e
 
 /usr/local/bin/dockerd \
-	--host=unix:///var/run/docker.sock \
-	--host=tcp://127.0.0.1:2375 \
-	--bip=192.168.50.1/24 \
-	--storage-driver=overlay2 &>/var/log/docker.log &
+    --host=unix:///var/run/docker.sock \
+    --host=tcp://127.0.0.1:2375 \
+    --bip=192.168.51.1/24 \
+    --storage-driver=overlay2 &>/var/log/docker.log &
 
 
 tries=0
