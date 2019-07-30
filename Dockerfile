@@ -29,9 +29,9 @@ ENV DOCKER_BUCKET="download.docker.com" \
 # Install git, SSH, and other utilities
 RUN set -ex \
     && echo 'Acquire::CompressionTypes::Order:: "gz";' > /etc/apt/apt.conf.d/99use-gzip-compression \
-    && apt-get update \
+    && apt-get -qq update 2>&1 >/dev/null \
     && apt install -y -q apt-transport-https \
-    && apt-get update \
+    && apt-get -qq update 2>&1 >/dev/null \
     && apt-get install -q -y --no-install-recommends software-properties-common \
     && apt-add-repository ppa:git-core/ppa \
     && apt-get update \
@@ -59,7 +59,7 @@ RUN set -ex \
         libtcl8.6 libtimedate-perl libxml2-utils libyaml-perl python-bzrlib \
         python-configobj sgml-base sgml-data tcl tcl8.6 xml-core xmlto xsltproc \
         tk gettext gettext-base libapr1 libaprutil1 xvfb expect parallel \
-        locales rsync \
+        locales rsync 2>&1 >/dev/null\
     && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF \
     && echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | tee /etc/apt/sources.list.d/mono-official-stable.list \
     && rm -rf /var/lib/apt/lists/* \
@@ -98,8 +98,8 @@ RUN curl -sS -o /usr/local/bin/aws-iam-authenticator https://amazon-eks.s3-us-we
     && chmod +x /usr/local/bin/kubectl /usr/local/bin/aws-iam-authenticator /usr/local/bin/ecs-cli
 
 RUN set -ex \
-    && pip3 install -U setuptools wheel \
-    && pip3 install awscli boto3  
+    && pip3 install -q -U setuptools wheel \
+    && pip3 install -q awscli boto3
 
 VOLUME /var/lib/docker
 
@@ -113,7 +113,7 @@ COPY dockerd-entrypoint.sh /usr/local/bin/
 #****************        PYTHON     *********************************************
 ENV PATH="/usr/local/bin:$PATH" \
     GPG_KEY="0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D" \
-    PYTHON_PIP_VERSION="19.1.1" \
+    PYTHON_PIP_VERSION="19.2.1" \
     LC_ALL=C.UTF-8 \
     LANG=C.UTF-8
 
