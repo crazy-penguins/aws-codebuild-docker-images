@@ -30,40 +30,36 @@ ENV DOCKER_BUCKET="download.docker.com" \
 RUN set -ex \
     && echo 'Acquire::CompressionTypes::Order:: "gz";' > /etc/apt/apt.conf.d/99use-gzip-compression \
     && apt-get update \
-    && apt install -y apt-transport-https \
+    && apt install -y -q apt-transport-https \
     && apt-get update \
-    && apt-get install -y --no-install-recommends software-properties-common \
+    && apt-get install -q -y --no-install-recommends software-properties-common \
     && apt-add-repository ppa:git-core/ppa \
     && apt-get update \
-    && apt-get install -y --no-install-recommends git=1:2.* \
+    && apt-get install -q -y --no-install-recommends git=1:2.* \
     && git version \
-    && apt-get install -y --no-install-recommends openssh-client \
+    && apt-get install -q -y --no-install-recommends openssh-client \
     && mkdir ~/.ssh \
     && touch ~/.ssh/known_hosts \
     && ssh-keyscan -t rsa,dsa -H github.com >> ~/.ssh/known_hosts \
     && ssh-keyscan -t rsa,dsa -H bitbucket.org >> ~/.ssh/known_hosts \
     && chmod 600 ~/.ssh/known_hosts \
-    && apt-get install -y --no-install-recommends wget python3 python3-dev python3-pip python3-setuptools fakeroot ca-certificates jq \
-    && apt-get install -y --no-install-recommends netbase gnupg dirmngr mercurial procps \
-    && apt-get install -y --no-install-recommends tar bzr gzip zip autoconf automake \
-    && apt-get install -y --no-install-recommends bzip2 file g++ gcc imagemagick \
-    && apt-get install -y --no-install-recommends libbz2-dev libc6-dev libcurl4-openssl-dev libdb-dev \
-    && apt-get install -y --no-install-recommends  libevent-dev libffi-dev libgeoip-dev libglib2.0-dev \
-    && apt-get install -y --no-install-recommends libjpeg-dev libkrb5-dev liblzma-dev \
-    && apt-get install -y --no-install-recommends libmagickcore-dev libmagickwand-dev libmysqlclient-dev \
-    && apt-get install -y --no-install-recommends libncurses5-dev libpq-dev libreadline-dev \
-    && apt-get install -y --no-install-recommends libsqlite3-dev libssl-dev libtool libwebp-dev \
-    && apt-get install -y --no-install-recommends libxml2-dev libxslt1-dev libyaml-dev make \
-    && apt-get install -y --no-install-recommends patch xz-utils zlib1g-dev unzip curl \
-    && apt-get install -y --no-install-recommends e2fsprogs iptables xfsprogs \
-    && apt-get install -y --no-install-recommends less groff liberror-perl \
-    && apt-get install -y --no-install-recommends asciidoc build-essential docbook-xml docbook-xsl dpkg-dev \
-    && apt-get install -y --no-install-recommends libdbd-sqlite3-perl libdbi-perl libdpkg-perl libhttp-date-perl \
-    && apt-get install -y --no-install-recommends libio-pty-perl libserf-1-1 libsvn-perl libsvn1 libtcl8.6 libtimedate-perl \
-    && apt-get install -y --no-install-recommends libxml2-utils libyaml-perl python-bzrlib python-configobj \
-    && apt-get install -y --no-install-recommends sgml-base sgml-data tcl tcl8.6 xml-core xmlto xsltproc \
-    && apt-get install -y --no-install-recommends tk gettext gettext-base libapr1 libaprutil1 xvfb expect parallel \
-    && apt-get install -y --no-install-recommends locales rsync \
+    && apt-get install -q -y --no-install-recommends \
+        wget python3 python3-dev python3-pip python3-setuptools fakeroot \
+        ca-certificates jq netbase gnupg dirmngr mercurial procps tar bzr \
+        gzip zip autoconf automake bzip2 file g++ gcc imagemagick \
+        libbz2-dev libc6-dev libcurl4-openssl-dev libdb-dev libevent-dev \
+        libffi-dev libgeoip-dev libglib2.0-dev libjpeg-dev libkrb5-dev \
+        liblzma-dev libmagickcore-dev libmagickwand-dev libmysqlclient-dev \
+        libncurses5-dev libpq-dev libreadline-dev libsqlite3-dev libssl-dev \
+        libtool libwebp-dev libxml2-dev libxslt1-dev libyaml-dev make patch \
+        xz-utils zlib1g-dev unzip curl e2fsprogs iptables xfsprogs \
+        less groff liberror-perl asciidoc build-essential docbook-xml \
+        docbook-xsl dpkg-dev libdbd-sqlite3-perl libdbi-perl libdpkg-perl \
+        libhttp-date-perl libio-pty-perl libserf-1-1 libsvn-perl libsvn1 \
+        libtcl8.6 libtimedate-perl libxml2-utils libyaml-perl python-bzrlib \
+        python-configobj sgml-base sgml-data tcl tcl8.6 xml-core xmlto xsltproc \
+        tk gettext gettext-base libapr1 libaprutil1 xvfb expect parallel \
+        locales rsync \
     && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF \
     && echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | tee /etc/apt/sources.list.d/mono-official-stable.list \
     && rm -rf /var/lib/apt/lists/* \
@@ -121,20 +117,19 @@ ENV PATH="/usr/local/bin:$PATH" \
     LC_ALL=C.UTF-8 \
     LANG=C.UTF-8
 
-RUN apt-get update && apt-get install -y --no-install-recommends tcl-dev tk-dev \
+RUN apt-get update && apt-get install -qq --no-install-recommends tcl-dev tk-dev \
     && rm -rf /var/lib/apt/lists/* \
-    && wget -O python.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz" && \
-    wget -O python.tar.xz.asc "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc" \
+    && wget -q -O python.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz" && \
+    wget -q -O python.tar.xz.asc "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc" \
     && export GNUPGHOME="$(mktemp -d)" \
     && (gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$GPG_KEY" \
         || gpg --keyserver pgp.mit.edu --recv-keys "$GPG_KEY" \
         || gpg --keyserver keyserver.ubuntu.com --recv-keys "$GPG_KEY") \
     && gpg --batch --verify python.tar.xz.asc python.tar.xz \
-    && rm -r "$GNUPGHOME" python.tar.xz.asc \
+    && rm -rf "$GNUPGHOME" python.tar.xz.asc \
     && mkdir -p /usr/src/python \
     && tar -xJC /usr/src/python --strip-components=1 -f python.tar.xz \
     && rm python.tar.xz \
-    \
     && cd /usr/src/python \
     && ./configure \
         --enable-loadable-sqlite-extensions \
@@ -151,9 +146,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends tcl-dev tk-dev 
 # we use "--force-reinstall" for the case where the version of pip we're trying to install is the same as the version bundled with Python
 # ("Requirement already up-to-date: pip==8.1.2 in /usr/local/lib/python3.6/site-packages")
 # https://github.com/docker-library/python/pull/143#issuecomment-241032683
-    && pip3 install --no-cache-dir --upgrade --force-reinstall "pip==$PYTHON_PIP_VERSION" \
-        && pip install pipenv virtualenv --no-cache-dir \
-        && pip3 install --no-cache-dir --upgrade setuptools wheel \
+    && pip3 install -q --no-cache-dir --upgrade --force-reinstall "pip==$PYTHON_PIP_VERSION" \
+        && pip install pipenv virtualenv -q --no-cache-dir \
+        && pip3 install -q --no-cache-dir --upgrade setuptools wheel \
 # then we use "pip list" to ensure we don't have more than one pip version installed
 # https://github.com/docker-library/python/pull/100
     && [ "$(pip list |tac|tac| awk -F '[ ()]+' '$1 == "pip" { print $2; exit }')" = "$PYTHON_PIP_VERSION" ] \
@@ -172,7 +167,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends tcl-dev tk-dev 
     && ln -s pydoc3 pydoc \
     && ln -s python3 python \
     && ln -s python3-config python-config \
-        && rm -fr /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    && rm -fr /var/lib/apt/lists/* /tmp/* /var/tmp/*
 #****************      END PYTHON     ********************************************* 
 
 #****************      NODEJS     ****************************************************
@@ -194,7 +189,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends tcl-dev tk-dev 
 RUN set -ex \
     && apt-add-repository "deb http://archive.canonical.com/ubuntu $(lsb_release -sc) partner" \
     && apt-add-repository ppa:malteworld/ppa && apt-get update \
-    && apt-get install -y --no-install-recommends libgtk-3-0 libglib2.0-0 libdbus-glib-1-2 libdbus-1-3 libasound2 \
+    && apt-get install -qq --no-install-recommends libgtk-3-0 libglib2.0-0 libdbus-glib-1-2 libdbus-1-3 libasound2 \
     && wget -O ~/FirefoxSetup.tar.bz2 "https://download.mozilla.org/?product=firefox-latest&os=linux64" \
     && tar xjf ~/FirefoxSetup.tar.bz2 -C /opt/ \
     && ln -s /opt/firefox/firefox /usr/local/bin/firefox \
@@ -215,7 +210,7 @@ RUN set -ex \
 RUN set -ex \
     && CHROME_VERSION=`google-chrome --version | awk -F '[ .]' '{print $3"."$4"."$5}'` \
     && CHROME_DRIVER_VERSION=`wget -qO- chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION` \
-    && wget --no-verbose -O /tmp/chromedriver_linux64.zip https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip \
+    && wget -q --no-verbose -O /tmp/chromedriver_linux64.zip https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip \
     && unzip /tmp/chromedriver_linux64.zip -d /opt \
     && rm /tmp/chromedriver_linux64.zip \
     && mv /opt/chromedriver /opt/chromedriver-$CHROME_DRIVER_VERSION \
