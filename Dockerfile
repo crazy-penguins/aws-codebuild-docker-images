@@ -138,7 +138,7 @@ RUN apt-get update && apt-get install -qq --no-install-recommends tcl-dev tk-dev
     && make -j$(nproc) 2>&1 >/dev.null \
     && make install 2>&1 >/dev.null \
     && ldconfig \
-    && echo 'python build done'
+    && echo 'python build done' \
 # explicit path to "pip3" to ensure distribution-provided "pip3" cannot interfere
     && if [ ! -e /usr/local/bin/pip3 ]; then : \
         && wget -q -O /tmp/get-pip.py 'https://bootstrap.pypa.io/get-pip.py' \
