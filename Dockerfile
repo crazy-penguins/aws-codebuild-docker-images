@@ -32,12 +32,12 @@ RUN set -ex \
     && apt-get -qq update 2>&1 >/dev/null \
     && apt install -y -q apt-transport-https \
     && apt-get -qq update 2>&1 >/dev/null \
-    && apt-get install -q -y --no-install-recommends software-properties-common \
+    && apt-get install -q -y --no-install-recommends software-properties-common 2>&1 >/dev/null \
     && apt-add-repository ppa:git-core/ppa \
-    && apt-get update \
-    && apt-get install -q -y --no-install-recommends git=1:2.* \
+    && apt-get -qq update 2>&1 >/dev/null \
+    && apt-get install -q -y --no-install-recommends git=1:2.* 2>&1 >/dev/null\
     && git version \
-    && apt-get install -q -y --no-install-recommends openssh-client \
+    && apt-get install -q -y --no-install-recommends openssh-client 2>&1 >/dev/null \
     && mkdir ~/.ssh \
     && touch ~/.ssh/known_hosts \
     && ssh-keyscan -t rsa,dsa -H github.com >> ~/.ssh/known_hosts \
@@ -59,7 +59,7 @@ RUN set -ex \
         libtcl8.6 libtimedate-perl libxml2-utils libyaml-perl python-bzrlib \
         python-configobj sgml-base sgml-data tcl tcl8.6 xml-core xmlto xsltproc \
         tk gettext gettext-base libapr1 libaprutil1 xvfb expect parallel \
-        locales rsync 2>&1 >/dev/null\
+        locales rsync 2>&1 >/dev/null \
     && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF \
     && echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | tee /etc/apt/sources.list.d/mono-official-stable.list \
     && rm -rf /var/lib/apt/lists/* \
@@ -131,12 +131,14 @@ RUN apt-get update && apt-get install -qq --no-install-recommends tcl-dev tk-dev
     && tar -xJC /usr/src/python --strip-components=1 -f python.tar.xz \
     && rm python.tar.xz \
     && cd /usr/src/python \
+    && echo 'building python . . .' \
     && ./configure \
         --enable-loadable-sqlite-extensions \
-        --enable-shared \
-    && make -j$(nproc) \
-    && make install \
+        --enable-shared 2>&1 >/dev.null \
+    && make -j$(nproc) 2>&1 >/dev.null \
+    && make install 2>&1 >/dev.null \
     && ldconfig \
+    && echo 'python build done'
 # explicit path to "pip3" to ensure distribution-provided "pip3" cannot interfere
     && if [ ! -e /usr/local/bin/pip3 ]; then : \
         && wget -q -O /tmp/get-pip.py 'https://bootstrap.pypa.io/get-pip.py' \
@@ -152,7 +154,6 @@ RUN apt-get update && apt-get install -qq --no-install-recommends tcl-dev tk-dev
 # then we use "pip list" to ensure we don't have more than one pip version installed
 # https://github.com/docker-library/python/pull/100
     && [ "$(pip list |tac|tac| awk -F '[ ()]+' '$1 == "pip" { print $2; exit }')" = "$PYTHON_PIP_VERSION" ] \
-    \
     && find /usr/local -depth \
         \( \
             \( -type d -a -name test -o -name tests \) \
@@ -180,7 +181,7 @@ RUN apt-get update && apt-get install -qq --no-install-recommends tcl-dev tk-dev
      && n $NODE_VERSION && npm install --save-dev -g grunt && npm install --save-dev -g grunt-cli && npm install --save-dev -g webpack \
      && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
      && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
-     && apt-get update && apt-get install -y --no-install-recommends yarn \
+     && apt-get -q update && apt-get install -q -y --no-install-recommends yarn \
      && cd / && rm -rf $N_SRC_DIR; 
 
 #****************      END NODEJS     ****************************************************
@@ -188,8 +189,9 @@ RUN apt-get update && apt-get install -qq --no-install-recommends tcl-dev tk-dev
 #****************    HEADLESS BROWSERS     *******************************************************
 RUN set -ex \
     && apt-add-repository "deb http://archive.canonical.com/ubuntu $(lsb_release -sc) partner" \
-    && apt-add-repository ppa:malteworld/ppa && apt-get update \
-    && apt-get install -qq --no-install-recommends libgtk-3-0 libglib2.0-0 libdbus-glib-1-2 libdbus-1-3 libasound2 \
+    && apt-add-repository ppa:malteworld/ppa && apt-get-q  update \
+    && apt-get install -qq --no-install-recommends libgtk-3-0 libglib2.0-0 \
+        libdbus-glib-1-2 libdbus-1-3 libasound2 2>&1 >/dev/null \
     && wget -q -O ~/FirefoxSetup.tar.bz2 "https://download.mozilla.org/?product=firefox-latest&os=linux64" \
     && tar xjf ~/FirefoxSetup.tar.bz2 -C /opt/ \
     && ln -s /opt/firefox/firefox /usr/local/bin/firefox \
