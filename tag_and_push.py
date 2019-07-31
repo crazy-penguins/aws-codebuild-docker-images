@@ -19,7 +19,7 @@ registry_url = f'{account_id}.dkr.ecr.{region}.amazonaws.com'
 if is_tag and version.startswith('v'):
     version = version[1:]
 final_tags = [
-    f'${registry_url}/{image_name}:latest',
+    f'{registry_url}/{image_name}:latest',
 ]
 if is_tag:
     final_tags.append(f'{registry_url}/{image_name}:{version}')
