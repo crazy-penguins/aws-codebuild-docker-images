@@ -12,12 +12,10 @@ phases:
       - pip install -U invoke
   build:
     commands:
-      - invoke --list
-      # - invoke build
+      - invoke build
   post_build:
     commands:
-      - invoke --list
-      # - invoke tag_and_push
+      - invoke tag-and-push
 cache:
   paths:
     - /root/.cache/pip/**/*
