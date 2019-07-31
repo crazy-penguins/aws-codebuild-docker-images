@@ -4,18 +4,13 @@
 
 import os
 import subprocess
-import boto3
 
 
 with open('NAME', 'r') as f:
     image_name = f.read()
     image_name = image_name.strip()
 ref = os.environ['CODEBUILD_WEBHOOK_TRIGGER']
-sts = boto3.client('sts')
-response = sts.get_caller_identity()
-account_id = response['Account']
-# account_id = os.environ['CODEBUILD_BUILD_ARN'].rsplit('/', 1)[0]
-# account_id = account_id.split(':')[-2]
+account_id = os.environ['AWS_ACCOUNT_ID']
 region = os.environ['AWS_DEFAULT_REGION']
 is_tag = ref.startswith('tag/')
 is_branch = ref.startswith('branch/')
