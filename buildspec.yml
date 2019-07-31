@@ -5,7 +5,7 @@ phases:
     runtime-versions:
       docker: 18
       python: 3.7
-  buildpre_:
+  pre_build:
     commands:
       - $(aws ecr get-login --no-include-email)
   build:
