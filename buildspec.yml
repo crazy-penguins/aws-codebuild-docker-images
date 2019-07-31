@@ -9,12 +9,13 @@ phases:
     commands:
       - $(aws ecr get-login --no-include-email)
       - export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+      - pip install -U invoke
   build:
     commands:
-      - python3.7 build.py
+      - invoke build
   post_build:
     commands:
-      - python3.7 tag_and_push.py
+      - invoke tag_and_push
 cache:
   paths:
     - /root/.cache/pip/**/*
