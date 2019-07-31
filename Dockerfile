@@ -224,6 +224,7 @@ RUN apt-get -q update 2>&1 >/dev/null\
 #    && ln -s /opt/chromedriver-$CHROME_DRIVER_VERSION /usr/bin/chromedriver \
 #    && chromedriver --version
 
-RUN pip3 install --no-cache-dir -q -U invoke
+RUN pip3 install --no-cache-dir -q -U invoke \
+  && apt-get -qq --no-install-recommends unixodbc-dev 2>&1 >/dev/null
 ENV DEBIAN_FRONTEND=teletype
 ENTRYPOINT [ "/usr/local/bin/dockerd-entrypoint.sh" ]
