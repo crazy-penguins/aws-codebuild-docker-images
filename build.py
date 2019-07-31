@@ -18,3 +18,6 @@ if is_tag and version.startswith('v'):
 subprocess.run(
     [ 'docker', 'build', '-t', f'{image_name}:{version}', '.' ],
     check=True)
+subprocess.run(
+    [ 'docker', 'images', ],
+    check=True)
