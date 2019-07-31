@@ -100,7 +100,7 @@ RUN curl -sS -o /usr/local/bin/aws-iam-authenticator https://amazon-eks.s3-us-we
 
 RUN set -ex \
     && pip3 install -q -U setuptools wheel \
-    && pip3 install -q awscli boto3 invoke
+    && pip3 install -q awscli boto3
 
 VOLUME /var/lib/docker
 
@@ -224,5 +224,6 @@ RUN apt-get -q update 2>&1 >/dev/null\
 #    && ln -s /opt/chromedriver-$CHROME_DRIVER_VERSION /usr/bin/chromedriver \
 #    && chromedriver --version
 
+RUN pip3 install --no-cache-dir -q -U invoke
 ENV DEBIAN_FRONTEND=teletype
 ENTRYPOINT [ "/usr/local/bin/dockerd-entrypoint.sh" ]

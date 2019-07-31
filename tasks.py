@@ -26,7 +26,7 @@ class Builder:
             self.name = self.name.strip()
 
         self.ref = os.environ.get('CODEBUILD_WEBHOOK_TRIGGER', 'branch/master')
-        self.version = ref.rsplit('/', 1)[-1].strip()
+        self.version = self.ref.rsplit('/', 1)[-1].strip()
         if self.is_tag and self.version.startswith('v'):
             self.version = self.version[1:]
 
