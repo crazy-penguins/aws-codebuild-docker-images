@@ -190,39 +190,39 @@ RUN apt-get -q update 2>&1 >/dev/null\
 #****************      END NODEJS     ****************************************************
 
 #****************    HEADLESS BROWSERS     *******************************************************
-RUN set -ex \
-    && apt-add-repository "deb http://archive.canonical.com/ubuntu $(lsb_release -sc) partner" 2>&1 >/dev/null \
-    && apt-add-repository ppa:malteworld/ppa 2>&1 >/dev/null\
-    && apt-get -q update 2>&1 >/dev/null \
-    && apt-get install -qq --no-install-recommends libgtk-3-0 libglib2.0-0 \
-        libdbus-glib-1-2 libdbus-1-3 libasound2 2>&1 >/dev/null \
-    && wget -q -O ~/FirefoxSetup.tar.bz2 "https://download.mozilla.org/?product=firefox-latest&os=linux64" \
-    && tar xjf ~/FirefoxSetup.tar.bz2 -C /opt/ \
-    && ln -s /opt/firefox/firefox /usr/local/bin/firefox \
-    && rm ~/FirefoxSetup.tar.bz2 \
-    && firefox --version
-
-# Install Chrome
-
-RUN set -ex \
-    && curl --silent --show-error --location --fail --retry 3 --output /tmp/google-chrome-stable_current_amd64.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
-    && (dpkg -i /tmp/google-chrome-stable_current_amd64.deb || apt-get -fy install) 2>&1 >/dev/null \
-    && rm -rf /tmp/google-chrome-stable_current_amd64.deb \
-    && sed -i 's|HERE/chrome"|HERE/chrome" --disable-setuid-sandbox --no-sandbox|g' "/opt/google/chrome/google-chrome" \
-    && google-chrome --version
-
-# Install ChromeDriver
-
-RUN set -ex \
-    && CHROME_VERSION=`google-chrome --version | awk -F '[ .]' '{print $3"."$4"."$5}'` \
-    && CHROME_DRIVER_VERSION=`wget -qO- chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION` \
-    && wget -q --no-verbose -O /tmp/chromedriver_linux64.zip https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip \
-    && unzip /tmp/chromedriver_linux64.zip -d /opt \
-    && rm /tmp/chromedriver_linux64.zip \
-    && mv /opt/chromedriver /opt/chromedriver-$CHROME_DRIVER_VERSION \
-    && chmod 755 /opt/chromedriver-$CHROME_DRIVER_VERSION \
-    && ln -s /opt/chromedriver-$CHROME_DRIVER_VERSION /usr/bin/chromedriver \
-    && chromedriver --version
+#RUN set -ex \
+#    && apt-add-repository "deb http://archive.canonical.com/ubuntu $(lsb_release -sc) partner" 2>&1 >/dev/null \
+#    && apt-add-repository ppa:malteworld/ppa 2>&1 >/dev/null\
+#    && apt-get -q update 2>&1 >/dev/null \
+#    && apt-get install -qq --no-install-recommends libgtk-3-0 libglib2.0-0 \
+#        libdbus-glib-1-2 libdbus-1-3 libasound2 2>&1 >/dev/null \
+#    && wget -q -O ~/FirefoxSetup.tar.bz2 "https://download.mozilla.org/?product=firefox-latest&os=linux64" \
+#    && tar xjf ~/FirefoxSetup.tar.bz2 -C /opt/ \
+#    && ln -s /opt/firefox/firefox /usr/local/bin/firefox \
+#    && rm ~/FirefoxSetup.tar.bz2 \
+#    && firefox --version
+#
+## Install Chrome
+#
+#RUN set -ex \
+#    && curl --silent --show-error --location --fail --retry 3 --output /tmp/google-chrome-stable_current_amd64.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+#    && (dpkg -i /tmp/google-chrome-stable_current_amd64.deb || apt-get -fy install) 2>&1 >/dev/null \
+#    && rm -rf /tmp/google-chrome-stable_current_amd64.deb \
+#    && sed -i 's|HERE/chrome"|HERE/chrome" --disable-setuid-sandbox --no-sandbox|g' "/opt/google/chrome/google-chrome" \
+#    && google-chrome --version
+#
+## Install ChromeDriver
+#
+#RUN set -ex \
+#    && CHROME_VERSION=`google-chrome --version | awk -F '[ .]' '{print $3"."$4"."$5}'` \
+#    && CHROME_DRIVER_VERSION=`wget -qO- chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION` \
+#    && wget -q --no-verbose -O /tmp/chromedriver_linux64.zip https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip \
+#    && unzip /tmp/chromedriver_linux64.zip -d /opt \
+#    && rm /tmp/chromedriver_linux64.zip \
+#    && mv /opt/chromedriver /opt/chromedriver-$CHROME_DRIVER_VERSION \
+#    && chmod 755 /opt/chromedriver-$CHROME_DRIVER_VERSION \
+#    && ln -s /opt/chromedriver-$CHROME_DRIVER_VERSION /usr/bin/chromedriver \
+#    && chromedriver --version
 
 ENV DEBIAN_FRONTEND=teletype
 ENTRYPOINT [ "/usr/local/bin/dockerd-entrypoint.sh" ]
