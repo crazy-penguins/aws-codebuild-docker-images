@@ -8,12 +8,14 @@ phases:
   pre_build:
     commands:
       - $(aws ecr get-login --no-include-email)
+      - export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account)
   build:
     commands:
-      - python3.7 build.py
-  post_build:
-    commands:
-      - python3.7 tag_and_push.py
+      - echo $AWS_ACCOUNT_ID
+#      - python3.7 build.py
+#  post_build:
+#    commands:
+#      - python3.7 tag_and_push.py
 cache:
   paths:
     - /root/.cache/pip/**/*
