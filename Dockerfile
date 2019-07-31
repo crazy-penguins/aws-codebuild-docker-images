@@ -33,7 +33,7 @@ RUN set -ex \
     && apt install -y -q apt-transport-https \
     && apt-get -qq update 2>&1 >/dev/null \
     && apt-get install -q -y --no-install-recommends software-properties-common 2>&1 >/dev/null \
-    && apt-add-repository ppa:git-core/ppa \
+    && apt-add-repository -q ppa:git-core/ppa 2>&1 >/dev/null \
     && apt-get -qq update 2>&1 >/dev/null \
     && apt-get install -q -y --no-install-recommends git=1:2.* 2>&1 >/dev/null\
     && git version \
@@ -117,7 +117,8 @@ ENV PATH="/usr/local/bin:$PATH" \
     LC_ALL=C.UTF-8 \
     LANG=C.UTF-8
 
-RUN apt-get update && apt-get install -qq --no-install-recommends tcl-dev tk-dev \
+RUN apt-get -q update 2>&1 >/dev/null\
+    && apt-get install -qq --no-install-recommends tcl-dev tk-dev 2>&1 >/dev/null \
     && rm -rf /var/lib/apt/lists/* \
     && wget -q -O python.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz" && \
     wget -q -O python.tar.xz.asc "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc" \
@@ -181,7 +182,8 @@ RUN apt-get update && apt-get install -qq --no-install-recommends tcl-dev tk-dev
      && n $NODE_VERSION && npm install --save-dev -g grunt && npm install --save-dev -g grunt-cli && npm install --save-dev -g webpack \
      && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
      && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
-     && apt-get -q update && apt-get install -q -y --no-install-recommends yarn \
+     && apt-get -q update 2>&1 >/dev/null \
+     && apt-get install -q -y --no-install-recommends yarn 2>&1 >/dev/null \
      && cd / && rm -rf $N_SRC_DIR; 
 
 #****************      END NODEJS     ****************************************************
@@ -189,7 +191,7 @@ RUN apt-get update && apt-get install -qq --no-install-recommends tcl-dev tk-dev
 #****************    HEADLESS BROWSERS     *******************************************************
 RUN set -ex \
     && apt-add-repository "deb http://archive.canonical.com/ubuntu $(lsb_release -sc) partner" \
-    && apt-add-repository ppa:malteworld/ppa && apt-get -q  update \
+    && apt-add-repository ppa:malteworld/ppa && apt-get -q update 2>&1 >/dev/null \
     && apt-get install -qq --no-install-recommends libgtk-3-0 libglib2.0-0 \
         libdbus-glib-1-2 libdbus-1-3 libasound2 2>&1 >/dev/null \
     && wget -q -O ~/FirefoxSetup.tar.bz2 "https://download.mozilla.org/?product=firefox-latest&os=linux64" \
@@ -202,7 +204,7 @@ RUN set -ex \
 
 RUN set -ex \
     && curl --silent --show-error --location --fail --retry 3 --output /tmp/google-chrome-stable_current_amd64.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
-    && (dpkg -i /tmp/google-chrome-stable_current_amd64.deb || apt-get -fy install) \
+    && (dpkg -i /tmp/google-chrome-stable_current_amd64.deb || apt-get -fy install) 2>&1 >/dev/null \
     && rm -rf /tmp/google-chrome-stable_current_amd64.deb \
     && sed -i 's|HERE/chrome"|HERE/chrome" --disable-setuid-sandbox --no-sandbox|g' "/opt/google/chrome/google-chrome" \
     && google-chrome --version
