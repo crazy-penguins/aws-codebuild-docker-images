@@ -9,7 +9,7 @@ import subprocess
 with open('NAME', 'r') as f:
     image_name = f.read()
     image_name = image_name.strip()
-ref = os.environ['CODEBUILD_WEBHOOK_TRIGGER']
+ref = os.environ.get('CODEBUILD_WEBHOOK_TRIGGER', 'branch/master')
 account_id = os.environ['AWS_ACCOUNT_ID']
 region = os.environ['AWS_DEFAULT_REGION']
 is_tag = ref.startswith('tag/')
