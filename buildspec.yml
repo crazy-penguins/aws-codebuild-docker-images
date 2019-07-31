@@ -9,9 +9,7 @@ phases:
     commands:
       - python3.7 --version
       - aws sts get-caller-identity
-      - aws ecr get-login
-      - aws ecr describe-repositories --repository-names dnd
-#      - python3.7 build.py
+      - $(aws ecr get-login)
 cache:
   paths:
     - /root/.cache/pip/**/*
