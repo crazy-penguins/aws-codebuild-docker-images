@@ -33,7 +33,7 @@ RUN set -ex \
     && apt install -y -q apt-transport-https \
     && apt-get -qq update 2>&1 >/dev/null \
     && apt-get install -q -y --no-install-recommends software-properties-common 2>&1 >/dev/null \
-    && apt-add-repository -q ppa:git-core/ppa 2>&1 >/dev/null \
+    && apt-add-repository ppa:git-core/ppa 2>&1 >/dev/null \
     && apt-get -qq update 2>&1 >/dev/null \
     && apt-get install -q -y --no-install-recommends git=1:2.* 2>&1 >/dev/null\
     && git version \
