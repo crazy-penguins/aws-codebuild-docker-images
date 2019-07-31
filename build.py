@@ -1,5 +1,5 @@
 ####
-#  Builds our docker image
+#  Tags and pushes our docker image to ecr
 ####
 
 import os

@@ -5,11 +5,15 @@ phases:
     runtime-versions:
       docker: 18
       python: 3.7
+  buildpre_:
+    commands:
+      - $(aws ecr get-login --no-include-email)
   build:
     commands:
-      - python3.7 --version
-      - aws sts get-caller-identity
-      - $(aws ecr get-login)
+      - python3.7 build.py
+  post_build:
+    commands:
+      - python3.7 tag_and_push.py
 cache:
   paths:
     - /root/.cache/pip/**/*
