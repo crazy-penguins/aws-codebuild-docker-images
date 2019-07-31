@@ -189,7 +189,7 @@ RUN apt-get update && apt-get install -qq --no-install-recommends tcl-dev tk-dev
 #****************    HEADLESS BROWSERS     *******************************************************
 RUN set -ex \
     && apt-add-repository "deb http://archive.canonical.com/ubuntu $(lsb_release -sc) partner" \
-    && apt-add-repository ppa:malteworld/ppa && apt-get-q  update \
+    && apt-add-repository ppa:malteworld/ppa && apt-get -q  update \
     && apt-get install -qq --no-install-recommends libgtk-3-0 libglib2.0-0 \
         libdbus-glib-1-2 libdbus-1-3 libasound2 2>&1 >/dev/null \
     && wget -q -O ~/FirefoxSetup.tar.bz2 "https://download.mozilla.org/?product=firefox-latest&os=linux64" \
