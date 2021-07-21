@@ -59,46 +59,6 @@ RUN set -ex \
     && chmod +x /usr/local/bin/gitversion \
     && rm -rf /tmp/*
 
-# Install Firefox
-RUN set -ex \
-    && apt-add-repository -y "deb http://archive.canonical.com/ubuntu $(lsb_release -sc) partner" \
-    && apt-add-repository -y ppa:malteworld/ppa && apt-get update \
-    && apt-get install -y libgtk-3-0 libglib2.0-0 libdbus-glib-1-2 libdbus-1-3 libasound2 \
-    && wget -nv -O ~/FirefoxSetup.tar.bz2 "https://download.mozilla.org/?product=firefox-latest&os=linux64" \
-    && tar xjf ~/FirefoxSetup.tar.bz2 -C /opt/ \
-    && ln -s /opt/firefox/firefox /usr/local/bin/firefox \
-    && rm ~/FirefoxSetup.tar.bz2 \
-    && firefox --version
-
-# Install GeckoDriver
-RUN set -ex \
-    && curl -s https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep browser_download_url | grep linux64.tar.gz | cut -d : -f 2,3 | tr -d ' "' | wget -nv -O /tmp/geckodriver-latest-linux64.tar.gz -qi - \
-    && tar -xzf /tmp/geckodriver-latest-linux64.tar.gz -C /opt \
-    && rm /tmp/geckodriver-latest-linux64.tar.gz \
-    && chmod 755 /opt/geckodriver \
-    && ln -s /opt/geckodriver /usr/bin/geckodriver \
-    && geckodriver --version
-
-# Install Chrome
-RUN set -ex \
-    && curl --silent --show-error --location --fail --retry 3 --output /tmp/google-chrome-stable_current_amd64.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
-    && (dpkg -i /tmp/google-chrome-stable_current_amd64.deb || apt-get -fy install) \
-    && rm -rf /tmp/google-chrome-stable_current_amd64.deb \
-    && sed -i 's|HERE/chrome"|HERE/chrome" --disable-setuid-sandbox --no-sandbox|g' "/opt/google/chrome/google-chrome" \
-    && google-chrome --version
-
-# Install ChromeDriver
-RUN set -ex \
-    && CHROME_VERSION=`google-chrome --version | awk -F '[ .]' '{print $3"."$4"."$5}'` \
-    && CHROME_DRIVER_VERSION=`wget -nv -qO- chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION` \
-    && wget -nv -O /tmp/chromedriver_linux64.zip https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip \
-    && unzip /tmp/chromedriver_linux64.zip -d /opt \
-    && rm /tmp/chromedriver_linux64.zip \
-    && mv /opt/chromedriver /opt/chromedriver-$CHROME_DRIVER_VERSION \
-    && chmod 755 /opt/chromedriver-$CHROME_DRIVER_VERSION \
-    && ln -s /opt/chromedriver-$CHROME_DRIVER_VERSION /usr/bin/chromedriver \
-    && chromedriver --version
-
 # Install stunnel
 RUN set -ex \
    && STUNNEL_VERSION=5.56 \
@@ -131,11 +91,6 @@ RUN set -ex \
     && dpkg -i amazon-ssm-agent.deb
 
 # Install env tools for runtimes
-# Dotnet
-ENV PATH "/root/.dotnet/:/root/.dotnet/tools/:$PATH"
-RUN set -ex  \
-&& wget -nv -O /usr/local/bin/dotnet-install.sh https://dot.net/v1/dotnet-install.sh \
-&& chmod +x /usr/local/bin/dotnet-install.sh 
 
 #nodejs
 ENV SRC_DIR="/usr/src"
@@ -143,68 +98,10 @@ ENV N_SRC_DIR="$SRC_DIR/n"
 RUN git clone https://github.com/tj/n $N_SRC_DIR \
      && cd $N_SRC_DIR && make install 
 
-#ruby
-ENV RBENV_SRC_DIR="/usr/local/rbenv"
-
-ENV PATH="/root/.rbenv/shims:$RBENV_SRC_DIR/bin:$RBENV_SRC_DIR/shims:$PATH" \
-    RUBY_BUILD_SRC_DIR="$RBENV_SRC_DIR/plugins/ruby-build"
-
-RUN set -ex \
-    && git clone https://github.com/rbenv/rbenv.git $RBENV_SRC_DIR \
-    && mkdir -p $RBENV_SRC_DIR/plugins \
-    && git clone https://github.com/rbenv/ruby-build.git $RUBY_BUILD_SRC_DIR \
-    && sh $RUBY_BUILD_SRC_DIR/install.sh
-
-#python
-RUN curl https://pyenv.run | bash
-ENV PATH="/root/.pyenv/shims:/root/.pyenv/bin:$PATH"
-
-#php
-RUN curl -L https://raw.githubusercontent.com/phpenv/phpenv-installer/master/bin/phpenv-installer | bash
-ENV PATH="/root/.phpenv/shims:/root/.phpenv/bin:$PATH"
-
-#go
-RUN git clone https://github.com/syndbg/goenv.git $HOME/.goenv
-ENV PATH="/root/.goenv/shims:/root/.goenv/bin:/go/bin:$PATH"
-ENV GOENV_DISABLE_GOPATH=1
-ENV GOPATH="/go"
 
 #=======================End of layer: tools  =================
 FROM tools AS runtimes
 
-#****************     .NET-CORE     *******************************************************
-
-ENV DOTNET_31_SDK_VERSION="3.1.102"
-
-# Add .NET Core Global Tools install folder to PATH
-RUN  /usr/local/bin/dotnet-install.sh -v $DOTNET_31_SDK_VERSION \
-     && dotnet --list-sdks \
-     && rm -rf /tmp/*
-
-# Trigger the population of the local package cache
-ENV NUGET_XMLDOC_MODE skip
-RUN set -ex \
-    && mkdir warmup \
-    && cd warmup \
-    && dotnet new \
-    && cd .. \
-    && rm -rf warmup \
-    && rm -rf /tmp/NuGetScratch
-
-# Install Powershell Core
-# See instructions at https://docs.microsoft.com/en-us/powershell/scripting/setup/installing-powershell-core-on-linux
-ENV POWERSHELL_VERSION 6.2.1
-ENV POWERSHELL_DOWNLOAD_URL https://github.com/PowerShell/PowerShell/releases/download/v$POWERSHELL_VERSION/powershell-$POWERSHELL_VERSION-linux-x64.tar.gz
-ENV POWERSHELL_DOWNLOAD_SHA E8287687C99162BF70FEFCC2E492F3B54F80BE880D86B9A0EC92C71B05C40013
-
-RUN set -ex \
-    && curl -SL $POWERSHELL_DOWNLOAD_URL --output powershell.tar.gz \
-    && echo "$POWERSHELL_DOWNLOAD_SHA powershell.tar.gz" | sha256sum -c - \
-    && mkdir -p /opt/microsoft/powershell/$POWERSHELL_VERSION \
-    && tar zxf powershell.tar.gz -C /opt/microsoft/powershell/$POWERSHELL_VERSION \
-    && rm powershell.tar.gz \
-    && ln -s /opt/microsoft/powershell/$POWERSHELL_VERSION/pwsh /usr/bin/pwsh
-#****************     END .NET-CORE     *******************************************************
 
 
 #****************      NODEJS     ****************************************************
